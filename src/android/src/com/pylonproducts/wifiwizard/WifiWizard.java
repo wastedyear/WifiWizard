@@ -263,22 +263,33 @@ public class WifiWizard extends CordovaPlugin {
             return false;
         }
 
-        int networkIdToConnect = ssidToNetworkId(ssidToConnect);
+        boolean connected = false;
+        List<WifiConfiguration> wifiList = wifiManager.getConfiguredNetworks();
+        for (WifiConfiguration wifi : wifiList) {
+            if(wifi.SSID.equals(ssidToConnect)){
+               wifi.priority = 999999;
+               wifiManager.updateNetwork(wifi);
+               wifiManager.enableNetwork(wifi.networkId, true);
+               connected = true;
+            }
+            else {
+                wifi.priority = 100;
+                wifiManager.updateNetwork(wifi);
+            }
+        }
 
-        if (networkIdToConnect >= 0) {
-            // We disable the network before connecting, because if this was the last connection before
-            // a disconnect(), this will not reconnect.
-            wifiManager.disableNetwork(networkIdToConnect);
-            wifiManager.enableNetwork(networkIdToConnect, true);
+        if(connected){
+            wifiManager.saveConfiguration();
+            wifiManager.reconnect();
 
             SupplicantState supState;
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             supState = wifiInfo.getSupplicantState();
             callbackContext.success(supState.toString());
             return true;
-
-        }else{
-            callbackContext.error("WifiWizard: cannot connect to network");
+        }
+        else{
+            callbackContext.error("WifiWizard: network not configured");
             return false;
         }
     }
@@ -310,7 +321,7 @@ public class WifiWizard extends CordovaPlugin {
 
         int networkIdToDisconnect = ssidToNetworkId(ssidToDisconnect);
 
-        if (networkIdToDisconnect > 0) {
+        if (networkIdToDisconnect >= 0) {
             wifiManager.disableNetwork(networkIdToDisconnect);
             callbackContext.success("Network " + ssidToDisconnect + " disconnected!");
             return true;
@@ -522,6 +533,7 @@ public class WifiWizard extends CordovaPlugin {
         for (WifiConfiguration test : currentNetworks) {
             if ( test.SSID.equals(ssid) ) {
                 networkId = test.networkId;
+                break;
             }
         }
 
