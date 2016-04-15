@@ -273,8 +273,9 @@ public class WifiWizard extends CordovaPlugin {
                connected = true;
             }
             else {
-                wifi.priority = 100;
+                wifi.priority = 0;
                 wifiManager.updateNetwork(wifi);
+                wifiManager.disableNetwork(wifi.networkId);
             }
         }
 
