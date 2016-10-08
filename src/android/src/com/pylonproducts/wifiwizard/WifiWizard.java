@@ -12,6 +12,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
+/*
+ *  Modified by Lefteris Chatzipetrou <lefteris@hamsystems.eu>
+ */
+
+
 package com.pylonproducts.wifiwizard;
 
 import org.apache.cordova.*;

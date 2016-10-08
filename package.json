@@ -6,7 +6,6 @@
     "id": "com.pylonproducts.wifiwizard",
     "platforms": [
       "android",
-      "ios"
     ]
   },
   "repository": {
